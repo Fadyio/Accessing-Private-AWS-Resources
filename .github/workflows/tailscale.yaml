@@ -1,0 +1,18 @@
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  deploy-via-tailscale:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Tailscale
+      uses: tailscale/github-action@v2
+      with:
+        oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+        oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+        tags: tag:ci
+    - name: Test-Connectivity-to-AWS-RDS
+      run: |
+        mysql -h ${{ secrets.ENDPOINT }} -u ${{ secrets.USER }} -p"${{ secrets.PASSWORD }}" -e "show databases;"
